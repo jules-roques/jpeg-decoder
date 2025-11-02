@@ -13,8 +13,8 @@ INCLUDE_DIR = include
 TARGET = $(BIN_DIR)/jpeg2ppm
 
 # Flags
-CFLAGS = -Wall -Wextra -std=c99 -I$(INCLUDE_DIR) -O0 -g -pg 
-LDFLAGS = -lm -pg
+CFLAGS = -Wall -Wextra -std=c99 -I$(INCLUDE_DIR) -O0 # -g -pg 
+LDFLAGS = -lm # -pg
 
 # --- File Lists ---
 
