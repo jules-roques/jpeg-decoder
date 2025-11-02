@@ -2,9 +2,6 @@
 
 This project is a JPEG decoder implemented from scratch in C. It reads JPEG files, decodes them, and outputs the resulting images in PPM/PGM format. The decoder handles all major JPEG stages, including Huffman coding, quantization, and color space conversion.
 
-The decoder parses the input JPEG file and reconstructs the pixel data, saving the result as a `.pgm` (grayscale) or `.ppm` (color) file.
-
-
 ## JPEG Decoding Pipeline
 
 This project implements the standard JPEG decoding pipeline, which reverses the encoding process. Our implementation follows this high-level architecture (the encoding process is shown for context):
