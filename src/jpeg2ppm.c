@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
   /* ouverture du fichier ppm en mode écriture */
   char* extension_fichier = get_image_extension(header);
   char* name_ppm = argv[1];
-  change_extension(name_ppm, extension_fichier);
+  change_dir_and_extension(name_ppm, extension_fichier);
   FILE* fichier_ppm = fopen(name_ppm, "wb");
 
   ecrit_entete_ppm(header, fichier_ppm);

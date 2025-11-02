@@ -1,11 +1,24 @@
 #include "fonctions_generiques.h"
 
+#include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "macros.h"
+
+#define MKDIR(path) mkdir(path, 0755)
+
+void ensure_out_dir_exists() {
+  // Try to create the directory
+  if (MKDIR("out") == -1 && errno != EEXIST) {
+    perror("Error creating 'out' directory");
+    exit(EXIT_FAILURE);
+  }
+}
 
 /*
 
@@ -26,19 +39,36 @@ int8_t verify_file_name_ext(char* filename) {
   return 0;
 }
 
-/*
-    change l'extension du fichier passé en argument (inspiré de la solution
-   Stack Overflow)
-*/
-void change_extension(char* file_name, char* extension) {
-  char* cursor = strrchr(file_name, '.') + 1;
+void change_dir_and_extension(char* file_name, char* new_extension) {
+  ensure_out_dir_exists();
 
-  while (*extension != '\0') {
-    *cursor = *extension;
-    cursor++;
-    extension++;
+  char* base_name = strrchr(file_name, '/');
+  if (base_name == NULL) {
+    base_name = file_name;
+  } else {
+    base_name++;
   }
-  *cursor = '\0';
+
+  char temp_name[256];
+  strcpy(temp_name, base_name);
+
+  char* dot = strrchr(temp_name, '.');
+  if (dot == NULL) {
+    dot = temp_name + strlen(temp_name);
+    *dot = '.';
+  }
+  dot++;
+
+  char* cursor = dot;
+  while (*new_extension != '\0') {
+    *cursor = *new_extension;
+    cursor++;
+    new_extension++;
+  }
+  *cursor = '\0';  // Add the null terminator
+
+  strcpy(file_name, "out/");
+  strcat(file_name, temp_name);
 }
 
 /* ------------------------------ COPIE DE TABLEAU

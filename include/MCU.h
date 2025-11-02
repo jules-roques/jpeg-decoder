@@ -1,6 +1,8 @@
 #ifndef _MCU_
 #define _MCU_
 
+#include "header_extraction.h"
+
 struct MCU;
 
 /*

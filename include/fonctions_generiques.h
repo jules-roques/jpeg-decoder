@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 /* --- CHANGE EXTENSION FICHER --- */
-void change_extension(char* file_name, char* extension);
+void change_dir_and_extension(char* file_name, char* new_extension);
 int8_t verify_file_name_ext(char* filename);
 
 /* --- COPIE TABLEAU --- */
