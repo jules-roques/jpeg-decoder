@@ -1,39 +1,54 @@
-# Notre décodeur JPEG à nous
+# JPEG Decoder from Scratch
 
-Bienvenue sur la page d'accueil de _votre_ projet JPEG, un grand espace de liberté, sous le regard bienveillant de vos enseignants préférés.
-Le sujet sera disponible dès le mardi 2 mai à l'adresse suivante : [https://formationc.pages.ensimag.fr/projet/jpeg/jpeg/](https://formationc.pages.ensimag.fr/projet/jpeg/jpeg/).
+This project is a JPEG decoder implemented from scratch in C. It reads JPEG files, decodes them, and outputs the resulting images in PPM/PGM format. The decoder handles all major JPEG stages, including Huffman coding, quantization, and color space conversion.
 
-Comme indiqué lors de l'amphi de présentation, vous devrez organiser un point d'étape avec vos enseignants pour valider cette architecture logicielle.
-Cette page d'accueil servira de base à cette discussion. En pratique, vous pouvez reprendre son contenu comme bon vous semble, mais elle devra au moins comporter les infos suivantes :
-
-1. des informations sur le découpage des fonctionnalités du projet en modules, en spécifiant les données en entrée et sortie de chaque étape ;
-2. (au moins) un dessin des structures de données de votre projet (format libre, ça peut être une photo d'un dessin manuscrit par exemple) ;
-3. une répartition des tâches au sein de votre équipe de développement, comportant une estimation du temps consacré à chacune d'elle (là encore, format libre, du truc cracra fait à la main, au joli Gantt chart).
-
-Rajouter **régulièrement** des informations sur l'avancement de votre projet est aussi **une très bonne idée** (prendre 10 min tous les trois chaque matin pour résumer ce qui a été fait la veille, établir un plan d'action pour la journée qui commence et reporter tout ça ici, par exemple).
-
-# Liens utiles
-
-- Bien former ses messages de commits : [https://www.conventionalcommits.org/en/v1.0.0/](https://www.conventionalcommits.org/en/v1.0.0/) ;
-- Problème relationnel au sein du groupe ? Contactez [Pascal](https://fr.wikipedia.org/wiki/Pascal,_le_grand_fr%C3%A8re) !
-- Besoin de prendre l'air ? Le [Mont Rachais](https://fr.wikipedia.org/wiki/Mont_Rachais) est accessible à pieds depuis la salle E301 !
-- Un peu juste sur le projet à quelques heures de la deadline ? Le [Montrachet](https://www.vinatis.com/achat-vin-puligny-montrachet) peut faire passer l'envie à vos profs de vous mettre une tôle !
+The decoder parses the input JPEG file and reconstructs the pixel data, saving the result as a `.pgm` (grayscale) or `.ppm` (color) file.
 
 
-# Avancemnent du projet
+## JPEG Decoding Pipeline
 
-Nous sommes heureux d'écrire ici, après 3 semaines de projet, que l'on a un décodeur fonctionnel pour les images jpeg codée en mode Baseline (avec une iDCT rapide). Nous avons testé notre programme seulement sur les images fournies pour le moment.
+This project implements the standard JPEG decoding pipeline, which reverses the encoding process. Our implementation follows this high-level architecture (the encoding process is shown for context):
 
-# Architecture
+![Encoding Decoding](utile/encoding_decoding.png)
 
-![alt text](utile/architecture.png)
+## Images of Increasing Complexity
+We built the decoder incrementally, validating each part of the pipeline step-by-step. Our testing strategy relied on images of increasing complexity to ensure the decoder was robust. We started with simple grayscale images and gradually moved to more complex color images with various compression levels.
 
-(Deux modules ne sont pas représentés sur le graphique, ils sont annexes et servent pour l'utilisation de macros et de fonctions génériques comme l'affichage d'un tableau par exemple)
 
-# Structures de données
+<img src="images/invader_resized.jpg" alt="drawing" width="200"/>
+<img src="images/albert.jpg" alt="drawing" width="150"/>
+<img src="images/biiiiiig.jpg" alt="drawing" width="200"/>
 
-Nous avons utilisé plusieurs structures de données pour mener à bien ce projet, qui sont pour les plus importantes :
 
-- Une structure d'arbre pour implémenter les arbres de Huffman et pour les créer, nous avons utilisé une structure de file pour créer l'arbre profondeur par profondeur (parcours en largeur),
-- Une structure "struct header" qui permet de stocker en plusieurs sous-structures les informations de l'en-tête auxquelles on pourra accéder grâce à des fonctions (comme un arbre de huffman, une table de quantification, ou bien des valeurs de sinus pour accélérer le calcul de l'iDCT),
-- Une structure "struct extended_FILE", qui tout comme le type natif FILE permet d'ouvrir un fichier et de lire dedans, mais offre en plus de cela la possiblilité de lire un nombre de bits précis (1, 3, 13 bits ...).
+## Core Features & Data Structures
+
+### Key Features Implemented
+- **Header Parsing:** Extracts all markers (SOF, DHT, DQT, SOS).
+- **Huffman Decoding:** Builds Huffman trees and decodes the variable-length bit stream.
+- **Inverse Quantization:** Rescales the coefficients using the DQT tables.
+- **Zig-Zag Reordering:** Reorders the 8x8 blocks from a 1D stream back into 2D.
+- **Inverse DCT (iDCT):** Transforms frequency coefficients back into spatial pixel values.
+- **YCbCr to RGB Conversion:** Converts the color space to standard RGB for the final image.
+- **PPM/PGM Output:** Writes the final pixel data to a file.
+
+### Core Data Structures
+- **`struct header`**: A master struct that holds all metadata extracted from the JPEG headers, including Huffman trees, quantization tables, and pre-calculated sine values for iDCT acceleration.
+- **Huffman Tree**: A standard binary tree used to decode the variable-length Huffman codes. It is built using a queue (breadth-first) to construct the tree level by level.
+- **`struct extended_FILE`**: A custom file wrapper that allows reading an arbitrary number of bits from the file stream (e.g., 1, 5, or 13 bits at a time), which is essential for parsing the JPEG bit stream.
+
+## How to Compile and Run
+
+To compile the project, use the provided Makefile:
+
+```bash
+make
+```
+
+To run the decoder on a JPEG file:
+
+```bash
+bin/jpeg2ppm images/invader.jpeg
+```
+
+The output image will be saved in the `out/` directory as `invader.pgm` or `invader.ppm` depending on whether the input image is grayscale or color.
+
