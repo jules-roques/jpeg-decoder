@@ -1,42 +1,65 @@
+# --- Variables ---
+
 CC = gcc
 LD = gcc
 
-# -O0 désactive les optimisations à la compilation
-# C'est utile pour débugger, par contre en "production"
-# on active au moins les optimisations de niveau 2 (-O2).
-CFLAGS = -Wall -Wextra -std=c99 -Iinclude -O0 -g -pg 
+# Directories
+SRC_DIR = src
+OBJ_DIR = obj
+BIN_DIR = bin
+INCLUDE_DIR = include
+
+# Target executable
+TARGET = $(BIN_DIR)/jpeg2ppm
+
+# Flags
+CFLAGS = -Wall -Wextra -std=c99 -I$(INCLUDE_DIR) -O0 -g -pg 
 LDFLAGS = -lm -pg
 
-# Par défaut, on compile tous les fichiers source (.c) qui se trouvent dans le
-# répertoire src/
-SRC_FILES=$(wildcard src/*.c)
+# --- File Lists ---
 
-# Par défaut, la compilation de src/toto.c génère le fichier objet obj/toto.o
-OBJ_FILES=$(patsubst src/%.c,obj/%.o,$(SRC_FILES))
-
-# Fichiers .h
-INCLUDE_FILES=$(wildcard include/*.h)
+SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
+OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC_FILES))
+INCLUDE_FILES = $(wildcard $(INCLUDE_DIR)/*.h)
 
 
-all: jpeg2ppm
+# --- Main Rules ---
 
-jpeg2ppm: $(OBJ_FILES)
+all: $(TARGET)
+
+# Rule to link the final executable
+$(TARGET): $(OBJ_FILES) | $(BIN_DIR)
 	$(LD) $(OBJ_FILES) $(LDFLAGS) -o $@
 
-obj/%.o: src/%.c $(INCLUDE_FILES)
+# Pattern rule to compile .c files into .o files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INCLUDE_FILES) | $(OBJ_DIR)
 	$(CC) -c $(CFLAGS) $< -o $@
 
-.PHONY: clean tests
+# --- Directory Creation Rules ---
 
-tests:
-	make jpeg2ppm
+$(BIN_DIR):
+	@mkdir -p $@
+
+$(OBJ_DIR):
+	@mkdir -p $@
+
+# --- Other Targets ---
+
+# Declare targets that are not files
+.PHONY: all clean tests
+
+# Rule to run tests (builds the main project first)
+tests: all
 	make -C tests/
 
+# Rule to clean up the project
 clean:
-	rm -rf jpeg2ppm obj/*.o 
+	@echo "Cleaning project..."
+	rm -rf $(TARGET) $(OBJ_DIR)
 	rm -rf *.out
 	rm -rf *.ppm
 	rm -rf *.pgm
 	rm -rf images/*.ppm
 	rm -rf images/*.pgm
 	make -C tests/ clean
+	@echo "Done."
