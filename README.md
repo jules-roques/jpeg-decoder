@@ -2,14 +2,14 @@
 
 This project is a JPEG decoder implemented from scratch in C. It reads JPEG files, decodes them, and outputs the resulting images in PPM/PGM format. The decoder handles all major JPEG stages, including Huffman coding, quantization, and color space conversion.
 
-## Images of Increasing Complexity
+## Implementation Summary
+
+### Images of Increasing Complexity
 We built the decoder incrementally, validating each part of the pipeline step-by-step. Our testing strategy relied on images of increasing complexity to ensure the decoder was robust. We started with simple grayscale images and gradually moved to more complex color images with various compression levels.
 
 | Invader | Albert | Biiiiiig |
 | :---: | :---: | :---: |
 | <img src="images/invader_resized.jpg" alt="Invader" width="200"/> | <img src="images/albert.jpg" alt="Albert" width="150"/> | <img src="images/biiiiiig.jpg" alt="Biiiiiig" width="200"/> |
-
-## Implementation Summary
 
 ### JPEG Decoding Pipeline
 
