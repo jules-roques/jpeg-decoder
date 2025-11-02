@@ -9,7 +9,9 @@ We built the decoder incrementally, validating each part of the pipeline step-by
 | :---: | :---: | :---: |
 | <img src="images/invader_resized.jpg" alt="Invader" width="200"/> | <img src="images/albert.jpg" alt="Albert" width="150"/> | <img src="images/biiiiiig.jpg" alt="Biiiiiig" width="200"/> |
 
-## JPEG Decoding Pipeline
+## Implementation Summary
+
+### JPEG Decoding Pipeline
 
 This project implements the standard JPEG decoding pipeline, which reverses the encoding process. Our implementation follows this high-level architecture (the encoding process is shown for context):
 
